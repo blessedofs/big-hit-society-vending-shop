@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>Big Hit Society | Admin Inventory</title>
+  <style>
+    :root{
+      --bg:#070b14;--panel:#0f1627;--panel2:#151e33;--text:#f5f7ff;--muted:#9ba7bf;
+      --line:#26314b;--accent:#7c5cff;--accent2:#00d1ff;--good:#24d18f;--danger:#ff5f6d;
+      --shadow:0 18px 50px rgba(0,0,0,.35)
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(circle at 15% 0%, rgba(124,92,255,.24), transparent 35%),
+        radial-gradient(circle at 100% 20%, rgba(0,209,255,.12), transparent 32%),var(--bg);
+      color:var(--text);min-height:100vh
+    }
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .app{max-width:1050px;margin:auto;padding:20px 16px 60px}
+    .hero{
+      padding:22px;background:linear-gradient(145deg,rgba(124,92,255,.18),rgba(15,22,39,.96));
+      border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow)
+    }
+    h1,h2,h3{margin:0}
+    .sub{color:var(--muted);margin:6px 0 0}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .space{justify-content:space-between}
+    .toolbar{margin:18px 0;display:flex;gap:10px;flex-wrap:wrap}
+    .btn{
+      border:none;border-radius:14px;padding:11px 14px;font-weight:900;color:white;
+      background:linear-gradient(135deg,var(--accent),#5f7cff)
+    }
+    .btn.secondary{background:#202b45}
+    .btn.good{background:linear-gradient(135deg,var(--good),#00b7a8);color:#031711}
+    .btn.danger{background:#3b1f28;color:#ff9ba5;border:1px solid #6a2b38}
+    .btn.ghost{background:transparent;border:1px solid var(--line)}
+    .panel{
+      margin-top:16px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:16px
+    }
+    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}
+    .stat{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px}
+    .stat strong{font-size:1.4rem;display:block}
+    .stat span{color:var(--muted);font-size:.82rem}
+    .form-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}
+    label{display:grid;gap:6px;color:#dbe3f7;font-weight:800;font-size:.9rem}
+    input,select,textarea{
+      width:100%;border:1px solid var(--line);background:#0b1221;color:var(--text);
+      border-radius:13px;padding:11px 12px;outline:none
+    }
+    textarea{min-height:76px;resize:vertical}
+    input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+    .inventory{display:grid;gap:10px;margin-top:12px}
+    .item{
+      border:1px solid var(--line);border-radius:18px;padding:13px;background:var(--panel2);
+      display:grid;grid-template-columns:1fr;gap:10px
+    }
+    .item-top{display:flex;justify-content:space-between;gap:12px;align-items:start}
+    .meta{color:var(--muted);font-size:.82rem;margin-top:3px}
+    .price{font-weight:950;font-size:1.05rem}
+    .pill{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:.72rem;font-weight:900;border:1px solid var(--line)}
+    .pill.good{color:#8ef0c9;background:rgba(36,209,143,.1)}
+    .pill.sold{color:#ff9aa4;background:rgba(255,95,109,.09)}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .empty{text-align:center;color:var(--muted);padding:24px}
+    .notice{
+      margin-top:14px;padding:11px 13px;border-radius:14px;background:rgba(0,209,255,.08);
+      border:1px solid rgba(0,209,255,.18);color:#cfefff;font-size:.84rem
+    }
+    .hidden{display:none!important}
+    .preview{
+      width:76px;height:95px;border-radius:12px;object-fit:cover;border:1px solid var(--line);background:#0b1221
+    }
+    @media(min-width:760px){
+      .stats{grid-template-columns:repeat(4,1fr)}
+      .form-grid{grid-template-columns:repeat(2,1fr)}
+      .form-grid .full{grid-column:1/-1}
+      .item{grid-template-columns:90px 1fr auto;align-items:center}
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <div class="row space">
+        <div>
+          <h1>Big Hit Society Admin</h1>
+          <p class="sub">Manage your vending inventory without editing code.</p>
+        </div>
+        <a class="btn ghost" href="index.html" style="text-decoration:none">View Customer Shop</a>
+      </div>
+      <div class="notice">Inventory is saved in this browser using local storage. If you open the site on another device, that device will have its own inventory unless we later connect a cloud database.</div>
+    </section>
+
+    <section class="stats">
+      <div class="stat"><strong id="statTotal">0</strong><span>Total Items</span></div>
+      <div class="stat"><strong id="statAvail">0</strong><span>Available</span></div>
+      <div class="stat"><strong id="statSold">0</strong><span>Sold</span></div>
+      <div class="stat"><strong id="statValue">$0</strong><span>Available Value</span></div>
+    </section>
+
+    <div class="toolbar">
+      <button class="btn good" id="newItem">+ Add Item</button>
+      <button class="btn secondary" id="exportBtn">Export Inventory</button>
+      <label class="btn secondary" style="display:inline-flex;align-items:center">
+        Import Inventory
+        <input id="importFile" type="file" accept=".json,application/json" hidden>
+      </label>
+      <button class="btn danger" id="resetBtn">Reset to Starter Inventory</button>
+    </div>
+
+    <section class="panel hidden" id="editor">
+      <div class="row space">
+        <h2 id="editorTitle">Add Item</h2>
+        <button class="btn ghost" id="closeEditor">Close</button>
+      </div>
+      <form id="itemForm" class="form-grid">
+        <input type="hidden" id="editId">
+
+        <label>
+          Product Name
+          <input id="name" required placeholder="Example: Charizard">
+        </label>
+
+        <label>
+          Category
+          <select id="category" required>
+            <option value="extended">Extended Art Case</option>
+            <option value="raw">Raw Card</option>
+            <option value="chain">3D Printed Chain</option>
+            <option value="keychain">Game Boy Keychain</option>
+          </select>
+        </label>
+
+        <label>
+          Description / Set
+          <input id="set" required placeholder="Example: 151 Extended Art Case">
+        </label>
+
+        <label>
+          Language
+          <select id="language">
+            <option value="English">English</option>
+            <option value="Japanese">Japanese</option>
+            <option value="Chinese">Chinese</option>
+            <option value="N/A">N/A</option>
+          </select>
+        </label>
+
+        <label>
+          Price
+          <input id="price" type="number" min="0" step="0.01" required placeholder="35">
+        </label>
+
+        <label>
+          Status
+          <select id="available">
+            <option value="true">Available</option>
+            <option value="false">Sold</option>
+          </select>
+        </label>
+
+        <label class="full">
+          Image Path or URL
+          <input id="image" placeholder="images/charizard.jpg">
+        </label>
+
+        <label class="full">
+          Featured Order
+          <input id="featured" type="number" min="1" step="1" value="1">
+        </label>
+
+        <div class="full row">
+          <button class="btn good" type="submit">Save Item</button>
+          <button class="btn secondary" type="button" id="cancelEdit">Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="row space">
+        <h2>Inventory</h2>
+        <input id="search" placeholder="Search inventory…" style="max-width:320px">
+      </div>
+      <div class="inventory" id="inventoryList"></div>
+    </section>
+  </main>
+
+  <script>
+    const starterInventory = [
+      { id:"charizard-151", category:"extended", name:"Charizard", set:"151 Extended Art Case", language:"English", price:35, image:"", available:true, featured:1 },
+      { id:"gengar-fusion", category:"extended", name:"Gengar", set:"Fusion Strike Extended Art Case", language:"Japanese", price:35, image:"", available:true, featured:2 },
+      { id:"pikachu-journey", category:"extended", name:"Pikachu", set:"Journey Together Extended Art Case", language:"English", price:35, image:"", available:true, featured:3 },
+      { id:"eevee-prismatic", category:"extended", name:"Eevee", set:"Prismatic Evolutions Extended Art Case", language:"Chinese", price:35, image:"", available:true, featured:4 },
+      { id:"raw-pikachu-001", category:"raw", name:"Pikachu Raw Card", set:"Single Raw Card", language:"English", price:12, image:"", available:true, featured:20 },
+      { id:"raw-mew-001", category:"raw", name:"Mew Raw Card", set:"Single Raw Card", language:"Japanese", price:18, image:"", available:true, featured:21 },
+      { id:"chain-black", category:"chain", name:"Extended Art Case Chain", set:"3D Printed Case Holder Chain", language:"N/A", price:15, image:"", available:true, featured:30 },
+      { id:"gameboy-red", category:"keychain", name:"Game Boy Keychain", set:"3D Printed Cartridge Keychain", language:"N/A", price:8, image:"", available:true, featured:40 }
+    ];
+
+    const $ = s => document.querySelector(s);
+
+    function loadInventory(){
+      try{
+        const saved = JSON.parse(localStorage.getItem("bhsInventory") || "null");
+        return Array.isArray(saved) && saved.length ? saved : [...starterInventory];
+      }catch(e){
+        return [...starterInventory];
+      }
+    }
+
+    let inventory = loadInventory();
+
+    function saveInventory(){
+      localStorage.setItem("bhsInventory", JSON.stringify(inventory));
+      render();
+    }
+
+    function money(n){
+      return `$${Number(n || 0).toFixed(2).replace(".00","")}`;
+    }
+
+    function categoryLabel(cat){
+      return {
+        extended:"Extended Art Case",
+        raw:"Raw Card",
+        chain:"3D Printed Chain",
+        keychain:"Game Boy Keychain"
+      }[cat] || "Item";
+    }
+
+    function slugify(text){
+      return String(text || "item")
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g,"-")
+        .replace(/^-+|-+$/g,"")
+        .slice(0,40) || "item";
+    }
+
+    function renderStats(){
+      $("#statTotal").textContent = inventory.length;
+      $("#statAvail").textContent = inventory.filter(i=>i.available).length;
+      $("#statSold").textContent = inventory.filter(i=>!i.available).length;
+      $("#statValue").textContent = money(inventory.filter(i=>i.available).reduce((s,i)=>s+Number(i.price||0),0));
+    }
+
+    function render(){
+      renderStats();
+      const q = $("#search").value.trim().toLowerCase();
+      const rows = inventory
+        .filter(i => !q || `${i.name} ${i.set} ${i.language} ${i.category}`.toLowerCase().includes(q))
+        .sort((a,b)=>(a.featured||999)-(b.featured||999));
+
+      $("#inventoryList").innerHTML = rows.length ? rows.map(item => `
+        <div class="item">
+          <div>
+            ${item.image
+              ? `<img class="preview" src="${item.image}" alt="${item.name}" onerror="this.style.display='none'">`
+              : `<div class="preview" style="display:grid;place-items:center;color:#7785a6;font-size:.72rem;text-align:center">NO<br>IMAGE</div>`}
+          </div>
+          <div>
+            <div class="row" style="gap:8px">
+              <strong>${item.name}</strong>
+              <span class="pill ${item.available ? "good":"sold"}">${item.available ? "AVAILABLE":"SOLD"}</span>
+            </div>
+            <div class="meta">${categoryLabel(item.category)}${item.language !== "N/A" ? ` • ${item.language}` : ""}</div>
+            <div class="meta">${item.set}</div>
+            <div class="price">${money(item.price)}</div>
+          </div>
+          <div class="actions">
+            <button class="btn secondary" data-edit="${item.id}">Edit</button>
+            <button class="btn ${item.available ? "danger":"good"}" data-toggle="${item.id}">
+              ${item.available ? "Mark Sold":"Mark Available"}
+            </button>
+            <button class="btn danger" data-delete="${item.id}">Delete</button>
+          </div>
+        </div>
+      `).join("") : `<div class="empty">No inventory matches your search.</div>`;
+    }
+
+    function openEditor(item=null){
+      $("#editor").classList.remove("hidden");
+      $("#editorTitle").textContent = item ? "Edit Item" : "Add Item";
+      $("#editId").value = item?.id || "";
+      $("#name").value = item?.name || "";
+      $("#category").value = item?.category || "extended";
+      $("#set").value = item?.set || "";
+      $("#language").value = item?.language || "English";
+      $("#price").value = item?.price ?? "";
+      $("#available").value = String(item?.available ?? true);
+      $("#image").value = item?.image || "";
+      $("#featured").value = item?.featured || Math.max(1, inventory.length + 1);
+      $("#editor").scrollIntoView({behavior:"smooth",block:"start"});
+    }
+
+    function closeEditor(){
+      $("#editor").classList.add("hidden");
+      $("#itemForm").reset();
+      $("#editId").value = "";
+    }
+
+    $("#newItem").addEventListener("click",()=>openEditor());
+    $("#closeEditor").addEventListener("click",closeEditor);
+    $("#cancelEdit").addEventListener("click",closeEditor);
+    $("#search").addEventListener("input",render);
+
+    $("#category").addEventListener("change",()=>{
+      if(["chain","keychain"].includes($("#category").value)){
+        $("#language").value = "N/A";
+      } else if($("#language").value === "N/A"){
+        $("#language").value = "English";
+      }
+    });
+
+    $("#itemForm").addEventListener("submit",(e)=>{
+      e.preventDefault();
+      const existingId = $("#editId").value;
+      const item = {
+        id: existingId || `${slugify($("#name").value)}-${Date.now().toString(36)}`,
+        category: $("#category").value,
+        name: $("#name").value.trim(),
+        set: $("#set").value.trim(),
+        language: $("#language").value,
+        price: Number($("#price").value),
+        image: $("#image").value.trim(),
+        available: $("#available").value === "true",
+        featured: Number($("#featured").value) || 999
+      };
+
+      if(existingId){
+        inventory = inventory.map(i=>i.id===existingId ? item : i);
+      }else{
+        inventory.push(item);
+      }
+
+      saveInventory();
+      closeEditor();
+    });
+
+    document.addEventListener("click",(e)=>{
+      const editBtn = e.target.closest("[data-edit]");
+      if(editBtn){
+        const item = inventory.find(i=>i.id===editBtn.dataset.edit);
+        if(item) openEditor(item);
+        return;
+      }
+
+      const toggleBtn = e.target.closest("[data-toggle]");
+      if(toggleBtn){
+        inventory = inventory.map(i=>i.id===toggleBtn.dataset.toggle ? {...i,available:!i.available} : i);
+        saveInventory();
+        return;
+      }
+
+      const deleteBtn = e.target.closest("[data-delete]");
+      if(deleteBtn){
+        const item = inventory.find(i=>i.id===deleteBtn.dataset.delete);
+        if(item && confirm(`Delete ${item.name}?`)){
+          inventory = inventory.filter(i=>i.id!==deleteBtn.dataset.delete);
+          saveInventory();
+        }
+      }
+    });
+
+    $("#exportBtn").addEventListener("click",()=>{
+      const blob = new Blob([JSON.stringify(inventory,null,2)],{type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "bhs-inventory.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    $("#importFile").addEventListener("change",async (e)=>{
+      const file = e.target.files?.[0];
+      if(!file) return;
+      try{
+        const data = JSON.parse(await file.text());
+        if(!Array.isArray(data)) throw new Error("Invalid inventory file");
+        inventory = data;
+        saveInventory();
+        alert("Inventory imported.");
+      }catch(err){
+        alert("Could not import that inventory file.");
+      }finally{
+        e.target.value = "";
+      }
+    });
+
+    $("#resetBtn").addEventListener("click",()=>{
+      if(confirm("Reset inventory to the starter items?")){
+        inventory = [...starterInventory];
+        saveInventory();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
