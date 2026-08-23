@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>Big Hit Society | Customer Shop</title>
+  <style>
+    :root{
+      --bg:#070b14;
+      --panel:#0f1627;
+      --panel2:#151e33;
+      --text:#f5f7ff;
+      --muted:#9ba7bf;
+      --line:#26314b;
+      --accent:#7c5cff;
+      --accent2:#00d1ff;
+      --good:#24d18f;
+      --danger:#ff5f6d;
+      --shadow:0 18px 50px rgba(0,0,0,.35);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(circle at 15% 0%, rgba(124,92,255,.24), transparent 35%),
+        radial-gradient(circle at 100% 20%, rgba(0,209,255,.12), transparent 32%),
+        var(--bg);
+      color:var(--text);
+      min-height:100vh;
+    }
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+    .app{max-width:1100px;margin:0 auto;padding:20px 16px 110px}
+    .hero{
+      display:grid;gap:10px;
+      padding:24px 20px;
+      background:linear-gradient(145deg,rgba(124,92,255,.18),rgba(15,22,39,.96));
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:46px;height:46px;border-radius:16px;
+      display:grid;place-items:center;
+      background:linear-gradient(145deg,var(--accent),var(--accent2));
+      box-shadow:0 10px 30px rgba(124,92,255,.3);
+      font-weight:900;color:white;
+    }
+    h1{margin:0;font-size:clamp(1.6rem,5vw,2.6rem);line-height:1}
+    .sub{color:var(--muted);margin:2px 0 0}
+    .hero-badge{
+      margin-top:8px;display:inline-flex;width:max-content;align-items:center;gap:8px;
+      background:rgba(36,209,143,.12);color:#8ef0c9;border:1px solid rgba(36,209,143,.28);
+      border-radius:999px;padding:8px 12px;font-size:.88rem;font-weight:700;
+    }
+    .controls{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+    .search,.select{
+      width:100%;border:1px solid var(--line);background:var(--panel);color:var(--text);
+      border-radius:16px;padding:14px 15px;outline:none;
+    }
+    .search:focus,.select:focus{border-color:var(--accent)}
+    .chips{display:flex;gap:8px;overflow:auto;padding:12px 0 4px;scrollbar-width:none}
+    .chips::-webkit-scrollbar{display:none}
+    .chip{
+      white-space:nowrap;border:1px solid var(--line);background:var(--panel);color:var(--text);
+      padding:9px 12px;border-radius:999px;font-weight:700;font-size:.9rem;
+    }
+    .chip.active{background:var(--accent);border-color:var(--accent)}
+    .topline{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:18px 2px 12px}
+    .topline h2{margin:0;font-size:1.1rem}
+    .count{color:var(--muted);font-size:.92rem}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+    .card{
+      overflow:hidden;border:1px solid var(--line);border-radius:20px;background:var(--panel);
+      box-shadow:0 12px 28px rgba(0,0,0,.22);
+      position:relative;
+    }
+    .img-wrap{aspect-ratio:4/5;background:linear-gradient(145deg,#17213a,#0d1322);position:relative;overflow:hidden}
+    .case-img{width:100%;height:100%;object-fit:cover;display:block}
+    .img-fallback{
+      width:100%;height:100%;display:grid;place-items:center;text-align:center;padding:16px;
+      background:
+        linear-gradient(135deg,rgba(124,92,255,.24),rgba(0,209,255,.08)),
+        repeating-linear-gradient(45deg,transparent 0 16px,rgba(255,255,255,.025) 16px 18px);
+      color:#cfd6e9;font-weight:900;letter-spacing:.02em;
+    }
+    .badge{
+      position:absolute;left:10px;top:10px;
+      border-radius:999px;padding:6px 9px;font-size:.72rem;font-weight:900;
+      background:rgba(5,8,14,.82);backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .badge.sold{color:#ff9aa4}
+    .lang-badge{
+      display:inline-flex;align-items:center;gap:6px;
+      margin-top:8px;padding:6px 9px;border-radius:999px;
+      background:#1b2640;border:1px solid #2d3a59;
+      color:#eaf0ff;font-size:.74rem;font-weight:900;
+    }
+    .fav{
+      position:absolute;right:10px;top:10px;width:36px;height:36px;border-radius:50%;
+      border:1px solid rgba(255,255,255,.16);background:rgba(5,8,14,.72);color:white;font-size:18px;
+    }
+    .fav.on{color:#ff6b81}
+    .info{padding:12px}
+    .name{font-weight:900;font-size:1rem;line-height:1.2}
+    .set{color:var(--muted);font-size:.78rem;margin-top:4px;min-height:2.2em}
+    .price{font-size:1.05rem;font-weight:900;margin-top:8px}
+    .small{font-size:.76rem;color:var(--muted)}
+    .actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
+    .variant-block{margin-top:10px}
+    .variant-label{font-size:.76rem;color:var(--muted);font-weight:800;margin-bottom:6px}
+    .variant-select{
+      width:100%;border:1px solid var(--line);background:#0b1221;color:var(--text);
+      border-radius:12px;padding:9px 10px
+    }
+    .btn{
+      border:none;border-radius:13px;padding:10px 11px;font-weight:900;color:white;
+      background:linear-gradient(135deg,var(--accent),#5f7cff);
+    }
+    .btn.secondary{background:#202b45;color:#e9edfa}
+    .btn:disabled{opacity:.45;cursor:not-allowed}
+    .empty{
+      grid-column:1/-1;border:1px dashed var(--line);border-radius:20px;padding:30px;text-align:center;color:var(--muted)
+    }
+    .cartbar{
+      position:fixed;left:0;right:0;bottom:0;z-index:20;
+      background:rgba(7,11,20,.88);backdrop-filter:blur(18px);
+      border-top:1px solid var(--line);
+      padding:12px 16px max(12px,env(safe-area-inset-bottom));
+    }
+    .cart-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+    .cart-summary{min-width:0}
+    .cart-summary strong{display:block}
+    .cart-summary span{color:var(--muted);font-size:.84rem}
+    .vendor-btn{
+      border:none;border-radius:16px;padding:13px 16px;background:linear-gradient(135deg,var(--good),#00b7a8);
+      color:#031711;font-weight:950;
+    }
+    .modal{
+      position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);
+      display:none;align-items:flex-end;justify-content:center;padding:14px;
+    }
+    .modal.show{display:flex}
+    .sheet{
+      width:min(720px,100%);max-height:88vh;overflow:auto;background:#0d1424;border:1px solid var(--line);
+      border-radius:26px 26px 18px 18px;padding:18px;box-shadow:var(--shadow);
+    }
+    .sheet-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .sheet h3{margin:0;font-size:1.25rem}
+    .iconbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);color:white}
+    .cart-items{display:grid;gap:9px;margin:16px 0}
+    .cart-item{
+      display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;
+      border:1px solid var(--line);background:var(--panel);border-radius:15px;padding:11px 12px;
+    }
+    .cart-item .meta{color:var(--muted);font-size:.8rem;margin-top:2px}
+    .remove{border:none;background:transparent;color:#ff8792;font-weight:800}
+    .totalbox{
+      border:1px solid rgba(124,92,255,.35);background:rgba(124,92,255,.12);border-radius:18px;padding:16px;
+      display:flex;justify-content:space-between;align-items:center;font-size:1.2rem;font-weight:950;
+    }
+    .vendor-screen{
+      display:none;margin-top:16px;border:2px solid var(--good);border-radius:20px;padding:18px;background:#081812;
+      text-align:center;
+    }
+    .vendor-screen.show{display:block}
+    .vendor-screen .big{font-size:clamp(2rem,10vw,4rem);font-weight:1000;line-height:1;margin:10px 0}
+    .vendor-screen .code{color:#8ef0c9;font-weight:800;letter-spacing:.08em}
+    .note{color:var(--muted);font-size:.82rem;margin-top:12px}
+    @media (min-width:700px){
+      .controls{grid-template-columns:2fr 1fr}
+      .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+      .actions{grid-template-columns:1fr 1fr}
+    }
+    @media (min-width:980px){
+      .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <div class="brand">
+        <div class="logo">BHS</div>
+        <div>
+          <h1>Big Hit Society Shop</h1>
+          <p class="sub">Browse cards, cases, chains, and keychains from your phone.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <div class="hero-badge">● Customer Mode</div>
+        <a href="admin.html" style="color:#cfd8ff;text-decoration:none;font-weight:800;font-size:.9rem">Admin Inventory</a>
+      </div>
+    </section>
+
+    <section class="controls">
+      <input id="search" class="search" type="search" placeholder="Search cards, Pokémon, chains, keychains…" autocomplete="off" />
+      <select id="sort" class="select" aria-label="Sort cases">
+        <option value="featured">Featured</option>
+        <option value="low">Price: Low to High</option>
+        <option value="high">Price: High to Low</option>
+        <option value="az">Name: A–Z</option>
+      </select>
+    </section>
+
+    <div class="chips" id="chips">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="extended">Extended Art</button>
+      <button class="chip" data-filter="raw">Raw Cards</button>
+      <button class="chip" data-filter="chain">3D Chains</button>
+      <button class="chip" data-filter="keychain">Game Boy Keychains</button>
+      <button class="chip" data-filter="available">Available</button>
+      <button class="chip" data-filter="favorites">♥ Favorites</button>
+      <button class="chip" data-filter="english">🇺🇸 English</button>
+      <button class="chip" data-filter="japanese">🇯🇵 Japanese</button>
+      <button class="chip" data-filter="chinese">🇨🇳 Chinese</button>
+      <button class="chip" data-filter="under30">Under $40</button>
+    </div>
+
+    <div class="topline">
+      <h2>Available Items</h2>
+      <div class="count" id="count"></div>
+    </div>
+
+    <section class="grid" id="grid"></section>
+  </main>
+
+  <div class="cartbar">
+    <div class="cart-inner">
+      <div class="cart-summary">
+        <strong id="cartText">Cart is empty</strong>
+        <span id="cartSub">Tap Add to Cart on any case</span>
+      </div>
+      <button class="vendor-btn" id="openCart">View Cart</button>
+    </div>
+  </div>
+
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Customer cart">
+    <div class="sheet">
+      <div class="sheet-head">
+        <h3>Your Extended Art Picks</h3>
+        <button class="iconbtn" id="closeModal" aria-label="Close">✕</button>
+      </div>
+      <div class="cart-items" id="cartItems"></div>
+      <div class="totalbox">
+        <span>Total</span>
+        <span id="total">$0</span>
+      </div>
+      <button class="vendor-btn" id="showVendor" style="width:100%;margin-top:12px">Show Vendor</button>
+
+      <div class="vendor-screen" id="vendorScreen">
+        <div>BIG HIT SOCIETY</div>
+        <div class="big" id="vendorTotal">$0</div>
+        <div id="vendorCount">0 items selected</div>
+        <div class="code" id="vendorCode">ORDER ----</div>
+      </div>
+      <div class="note">This page does not process payments. Show this screen to the vendor to finish your purchase.</div>
+    </div>
+  </div>
+
+  <script>
+    /*
+      EASY INVENTORY EDITING
+      ----------------------
+      Replace the sample entries below with your real Extended Art cases.
+
+      image:
+        - Put your photos in an "images" folder next to index.html.
+        - Example: image: "images/charizard-151.jpg"
+        - If image is blank or missing, the page shows a clean fallback tile.
+
+      language = "English", "Japanese", or "Chinese"
+      price = card + Extended Art case together
+      available = false marks the item SOLD
+    */
+    const defaultInventory = [
+      // ${categoryLabel(item.category).toUpperCase()}S
+      { id:"charizard-151", category:"extended", name:"Charizard", set:"151 Extended Art Case", language:"English", price:35, image:"", available:true, featured:1 },
+      { id:"gengar-fusion", category:"extended", name:"Gengar", set:"Fusion Strike Extended Art Case", language:"Japanese", price:35, image:"", available:true, featured:2 },
+      { id:"pikachu-journey", category:"extended", name:"Pikachu", set:"Journey Together Extended Art Case", language:"English", price:35, image:"", available:true, featured:3 },
+      { id:"eevee-prismatic", category:"extended", name:"Eevee", set:"Prismatic Evolutions Extended Art Case", language:"Chinese", price:35, image:"", available:true, featured:4 },
+
+      // RAW CARDS
+      { id:"raw-pikachu-001", category:"raw", name:"Pikachu Raw Card", set:"Single Raw Card", language:"English", price:12, image:"", available:true, featured:20 },
+      { id:"raw-mew-001", category:"raw", name:"Mew Raw Card", set:"Single Raw Card", language:"Japanese", price:18, image:"", available:true, featured:21 },
+
+      // 3D PRINTED CHAINS
+      { id:"chain-black", category:"chain", name:"Extended Art Case Chain", set:"3D Printed Case Holder Chain", language:"N/A", price:15, image:"", available:true, featured:30 },
+      { id:"chain-display", category:"chain", name:"Extended Art Display Chain", set:"3D Printed Extended Art Holder", language:"N/A", price:18, image:"", available:true, featured:31 },
+
+      // GAME BOY KEYCHAINS
+      { id:"gameboy-red", category:"keychain", name:"Game Boy Keychain", set:"3D Printed Cartridge Keychain", language:"N/A", price:8, image:"", available:true, featured:40, movies:["Pokémon: The First Movie","Pokémon the Movie 2000","Pokémon 3: The Movie","Pokémon 4Ever","Pokémon Heroes"], colors:[{"name":"Red","available":true,"image":""},{"name":"Yellow","available":true,"image":""},{"name":"Green","available":true,"image":""},{"name":"Blue","available":true,"image":""},{"name":"Purple","available":true,"image":""},{"name":"Pink","available":true,"image":""},{"name":"Midnight","available":true,"image":""},{"name":"Silver","available":true,"image":""},{"name":"Gold","available":true,"image":""}] },
+      { id:"gameboy-nfc", category:"keychain", name:"Game Boy NFC Keychain", set:"3D Printed Game Cartridge + NFC", language:"N/A", price:15, image:"", available:true, featured:41, movies:["Pokémon: The First Movie","Pokémon the Movie 2000","Pokémon 3: The Movie","Pokémon 4Ever","Pokémon Heroes"], colors:[{"name":"Red","available":true,"image":""},{"name":"Yellow","available":true,"image":""},{"name":"Green","available":true,"image":""},{"name":"Blue","available":true,"image":""},{"name":"Purple","available":true,"image":""},{"name":"Pink","available":true,"image":""},{"name":"Midnight","available":true,"image":""},{"name":"Silver","available":true,"image":""},{"name":"Gold","available":true,"image":""}] }
+    ];
+
+    function loadInventory() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("bhsInventory") || "null");
+        return Array.isArray(saved) && saved.length ? saved : defaultInventory;
+      } catch (e) {
+        return defaultInventory;
+      }
+    }
+
+    let inventory = loadInventory();
+
+    const $ = (sel) => document.querySelector(sel);
+    const grid = $("#grid");
+    const count = $("#count");
+    const search = $("#search");
+    const sort = $("#sort");
+    const modal = $("#modal");
+    const cartItems = $("#cartItems");
+    const total = $("#total");
+    const vendorScreen = $("#vendorScreen");
+    const vendorTotal = $("#vendorTotal");
+    const vendorCount = $("#vendorCount");
+    const vendorCode = $("#vendorCode");
+
+    let filter = "all";
+    let favorites = new Set(JSON.parse(localStorage.getItem("bhsFavorites") || "[]"));
+    let cart = JSON.parse(localStorage.getItem("bhsCart") || "[]");
+
+    function money(n){ return `$${Number(n).toFixed(0)}`; }
+
+    function languageFlag(language){
+      if(language === "Japanese") return "🇯🇵";
+      if(language === "Chinese") return "🇨🇳";
+      if(language === "English") return "🇺🇸";
+      return "";
+    }
+
+    function categoryLabel(category){
+      if(category === "extended") return "Extended Art Case";
+      if(category === "raw") return "Raw Card";
+      if(category === "chain") return "3D Printed Chain";
+      if(category === "keychain") return "Game Boy Keychain";
+      return "Item";
+    }
+
+    function save(){
+      localStorage.setItem("bhsFavorites", JSON.stringify([...favorites]));
+      localStorage.setItem("bhsCart", JSON.stringify(cart));
+    }
+
+    function filteredItems(){
+      const q = search.value.trim().toLowerCase();
+      let items = inventory.filter(item => {
+        const matchQ = !q || `${item.name} ${item.set} ${item.language} ${item.category}`.toLowerCase().includes(q);
+        const matchFilter =
+          filter === "all" ||
+          (filter === "extended" && item.category === "extended") ||
+          (filter === "raw" && item.category === "raw") ||
+          (filter === "chain" && item.category === "chain") ||
+          (filter === "keychain" && item.category === "keychain") ||
+          (filter === "available" && item.available) ||
+          (filter === "favorites" && favorites.has(item.id)) ||
+          (filter === "english" && item.language === "English") ||
+          (filter === "japanese" && item.language === "Japanese") ||
+          (filter === "chinese" && item.language === "Chinese") ||
+          (filter === "under30" && item.price < 40);
+        return matchQ && matchFilter;
+      });
+
+      if(sort.value === "low") items.sort((a,b)=>a.price-b.price);
+      else if(sort.value === "high") items.sort((a,b)=>b.price-a.price);
+      else if(sort.value === "az") items.sort((a,b)=>a.name.localeCompare(b.name));
+      else items.sort((a,b)=>a.featured-b.featured);
+
+      return items;
+    }
+
+    function cardImage(item){
+      if(!item.image){
+        return `<div class="img-fallback"><div>${item.name}<br><span style="font-size:.75rem;color:#8fa0bf">${categoryLabel(item.category).toUpperCase()}</span></div></div>`;
+      }
+      return `<img class="case-img" src="${item.image}" alt="${item.name} extended art case" onerror="this.outerHTML='<div class=&quot;img-fallback&quot;><div>${item.name}<br><span style=&quot;font-size:.75rem;color:#8fa0bf&quot;>${categoryLabel(item.category).toUpperCase()}</span></div></div>'">`;
+    }
+
+    function render(){
+      const items = filteredItems();
+      count.textContent = `${items.length} design${items.length === 1 ? "" : "s"}`;
+      if(!items.length){
+        grid.innerHTML = `<div class="empty">No cases match that search yet.</div>`;
+        return;
+      }
+
+      grid.innerHTML = items.map(item => `
+        <article class="card">
+          <div class="img-wrap">
+            ${cardImage(item)}
+            <div class="badge ${item.available ? "" : "sold"}">${item.available ? "AVAILABLE" : "SOLD"}</div>
+            <button class="fav ${favorites.has(item.id) ? "on" : ""}" data-fav="${item.id}" aria-label="Favorite ${item.name}">
+              ${favorites.has(item.id) ? "♥" : "♡"}
+            </button>
+          </div>
+          <div class="info">
+            <div class="name">${item.name}</div>
+            <div class="set">${item.set}</div>
+            ${item.language !== "N/A" ? `<div class="lang-badge">${languageFlag(item.language)} ${item.language}</div>` : ""}
+            <div class="price">${money(item.price)}</div>
+            <div class="small">${categoryLabel(item.category)}</div>
+            ${item.category === "keychain" && Array.isArray(item.colors) ? `
+              <div class="variant-block">
+                <div class="variant-label">Choose Color</div>
+                <select class="variant-select" data-color-select="${item.id}">
+                  ${item.colors.filter(c=>c.available).map(c=>`<option value="${c.name}">${c.name}</option>`).join("")}
+                </select>
+              </div>` : ""}
+            ${item.category === "keychain" && Array.isArray(item.movies) ? `
+              <div class="variant-block">
+                <div class="variant-label">Choose Pokémon Movie</div>
+                <select class="variant-select" data-movie-select="${item.id}">
+                  ${item.movies.map(m=>`<option value="${m}">${m}</option>`).join("")}
+                </select>
+              </div>` : ""}
+            <div class="actions">
+              <button class="btn" data-add="${item.id}" ${!item.available || (item.category === "keychain" && Array.isArray(item.colors) && !item.colors.some(c=>c.available)) ? "disabled" : ""}>+ Add to Cart</button>
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function addToCart(id, color="", movie=""){
+      const item = inventory.find(x => x.id === id);
+      if(!item || !item.available) return;
+      cart.push({
+        key: `${id}-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        id,
+        name:item.name,
+        set:item.set,
+        category:item.category,
+        language:item.language,
+        color,
+        movie,
+        price: item.price
+      });
+      save();
+      updateCartBar();
+    }
+
+    function updateCartBar(){
+      const sum = cart.reduce((a,b)=>a+b.price,0);
+      $("#cartText").textContent = cart.length ? `${cart.length} item${cart.length===1?"":"s"} • ${money(sum)}` : "Cart is empty";
+      $("#cartSub").textContent = cart.length ? "Ready to show the vendor" : "Tap Add to Cart on any case";
+    }
+
+    function renderCart(){
+      vendorScreen.classList.remove("show");
+      if(!cart.length){
+        cartItems.innerHTML = `<div class="empty">Your cart is empty.</div>`;
+      } else {
+        cartItems.innerHTML = cart.map(c => `
+          <div class="cart-item">
+            <div>
+              <strong>${c.name}</strong>
+              <div class="meta">${c.language !== "N/A" ? `${languageFlag(c.language)} ${c.language} • ` : ""}${categoryLabel(c.category)}${c.color ? ` • ${c.color}` : ""}${c.movie ? ` • ${c.movie}` : ""} • ${money(c.price)}</div>
+            </div>
+            <button class="remove" data-remove="${c.key}">Remove</button>
+          </div>
+        `).join("");
+      }
+      const sum = cart.reduce((a,b)=>a+b.price,0);
+      total.textContent = money(sum);
+      $("#showVendor").disabled = cart.length === 0;
+    }
+
+    function makeOrderCode(){
+      const seed = Date.now().toString(36).slice(-4).toUpperCase();
+      return `BHS-${seed}`;
+    }
+
+    document.addEventListener("click", (e)=>{
+      const favBtn = e.target.closest("[data-fav]");
+      if(favBtn){
+        const id = favBtn.dataset.fav;
+        favorites.has(id) ? favorites.delete(id) : favorites.add(id);
+        save();
+        render();
+        return;
+      }
+
+      const addBtn = e.target.closest("[data-add]");
+      if(addBtn){
+        const id = addBtn.dataset.add;
+        const item = inventory.find(x=>x.id===id);
+        let color = "";
+        let movie = "";
+        if(item?.category === "keychain" && Array.isArray(item.colors)){
+          color = document.querySelector(`[data-color-select="${id}"]`)?.value || "";
+        }
+        if(item?.category === "keychain" && Array.isArray(item.movies)){
+          movie = document.querySelector(`[data-movie-select="${id}"]`)?.value || "";
+        }
+        addToCart(id, color, movie);
+        return;
+      }
+
+      const chip = e.target.closest(".chip");
+      if(chip){
+        document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+        chip.classList.add("active");
+        filter = chip.dataset.filter;
+        render();
+        return;
+      }
+
+      const remove = e.target.closest("[data-remove]");
+      if(remove){
+        cart = cart.filter(c=>c.key !== remove.dataset.remove);
+        save();
+        renderCart();
+        updateCartBar();
+      }
+    });
+
+    document.addEventListener("change",(e)=>{
+      const select = e.target.closest("[data-color-select]");
+      if(!select) return;
+      const item = inventory.find(x=>x.id===select.dataset.colorSelect);
+      const color = item?.colors?.find(c=>c.name===select.value);
+      const card = select.closest(".card");
+      const imgWrap = card?.querySelector(".img-wrap");
+      if(!item || !imgWrap) return;
+      const media = imgWrap.querySelector(".case-img,.img-fallback");
+      if(color?.image){
+        if(media) media.outerHTML = `<img class="case-img" src="${color.image}" alt="${item.name} ${color.name}" onerror="this.outerHTML='<div class=&quot;img-fallback&quot;><div>${item.name}<br><span style=&quot;font-size:.75rem;color:#8fa0bf&quot;>${categoryLabel(item.category).toUpperCase()}</span></div></div>'">`;
+      }else if(item.image){
+        if(media) media.outerHTML = `<img class="case-img" src="${item.image}" alt="${item.name}" onerror="this.outerHTML='<div class=&quot;img-fallback&quot;><div>${item.name}<br><span style=&quot;font-size:.75rem;color:#8fa0bf&quot;>${categoryLabel(item.category).toUpperCase()}</span></div></div>'">`;
+      }
+    });
+
+    search.addEventListener("input", render);
+    sort.addEventListener("change", render);
+
+    $("#openCart").addEventListener("click", ()=>{
+      renderCart();
+      modal.classList.add("show");
+      document.body.style.overflow = "hidden";
+    });
+
+    $("#closeModal").addEventListener("click", ()=>{
+      modal.classList.remove("show");
+      document.body.style.overflow = "";
+    });
+
+    modal.addEventListener("click", (e)=>{
+      if(e.target === modal){
+        modal.classList.remove("show");
+        document.body.style.overflow = "";
+      }
+    });
+
+    document.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape" && modal.classList.contains("show")){
+        modal.classList.remove("show");
+        document.body.style.overflow = "";
+      }
+    });
+
+    $("#showVendor").addEventListener("click", ()=>{
+      if(!cart.length) return;
+      const sum = cart.reduce((a,b)=>a+b.price,0);
+      vendorTotal.textContent = money(sum);
+      vendorCount.textContent = `${cart.length} item${cart.length===1?"":"s"} selected`;
+      vendorCode.textContent = `ORDER ${makeOrderCode()}`;
+      vendorScreen.classList.add("show");
+      vendorScreen.scrollIntoView({behavior:"smooth", block:"center"});
+    });
+
+
+    document.addEventListener("visibilitychange", ()=>{
+      if(!document.hidden){
+        inventory = loadInventory();
+        render();
+        updateCartBar();
+      }
+    });
+
+    window.addEventListener("storage", (e)=>{
+      if(e.key === "bhsInventory"){
+        inventory = loadInventory();
+        render();
+      }
+    });
+
+    render();
+    updateCartBar();
+  </script>
+</body>
+</html>
+
+<!-- Customer Mode inventory model supports Extended Art cases, raw cards, 3D chains, and Game Boy keychains. -->
+
+<!-- Language badges enabled: English, Japanese, Chinese. -->
